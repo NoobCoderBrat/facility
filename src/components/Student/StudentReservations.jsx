@@ -1,8 +1,32 @@
 import StudentSidebar from "./StudentSidebar.jsx";
 import StudentHeader from "./StudentHeader.jsx";
+import supabase from "../supabaseClient.jsx";
+import { useEffect, useState } from "react";
 
 const StudentReservations = () => {
-  return (
+  const [studentData, setStudentData] = useState([]);
+  const name = sessionStorage.getItem("name");
+
+  const fetch_data = async () => {
+    try {
+      const { error, data } = await supabase
+        .from('Booking')
+        .select('*')
+        .eq('fullName', name)
+      if (error) throw error;
+      setStudentData(data)
+    } catch (error) {
+      alert("An unexpected error occurred.");
+      console.error('Error during fetching history:', error.message);
+    }
+  };
+
+  useEffect(() => {
+    fetch_data();
+  }, []);
+
+
+   return (
     <div className="flex h-screen bg-gray-100 font-mono">
       <StudentSidebar />
       <div className="flex-1 flex flex-col">
@@ -12,32 +36,28 @@ const StudentReservations = () => {
             <table className="table bg-white">
               <thead className="bg-base-200">
                 <tr>
-                  <th></th>
                   <th>ID Number</th>
                   <th>Fullname</th>
                   <th>Facility</th>
                   <th>Date</th>
                   <th>Start Time</th>
                   <th>End Time</th>
-                  <th>Remarks</th>
+                  <th>Status</th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <th>1</th>
-                  <td>202-01328</td>
-                  <td>Danny Cahilig</td>
-                  <td>Hiraya Auditorium</td>
-                  <td>11/30/2024</td>
-                  <td>8:00 AM</td>
-                  <td>2:00 PM</td>
-                  <td>
-                    <button className="btn btn-outline btn-warning btn-sm">
-                      Pending
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
+                {studentData.map((student, index) => (
+                  <tr key={index}>
+                <td>{student.idNumber}</td>
+                <td>{student.fullName}</td>
+                <td>{student.facilityType}</td>
+                <td>{student.reservationDate}</td>
+                <td>{student.startTime}</td>
+                <td>{student.endTime}</td>
+                <td>{student.status}</td>
+              </tr>
+            ))}
+          </tbody>
             </table>
           </div>
         </main>

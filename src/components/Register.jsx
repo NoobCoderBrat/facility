@@ -1,16 +1,26 @@
 import { useState } from "react";
+import supabase from "./supabaseClient";
 
 const Register = ({ onToggle }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      alert("Registration Successful!");
-    }, 2000);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+
+
+  const handleSubmit = async () => {
+    const { data, error } = await supabase
+      .from('Student')
+      .insert([
+        {
+       email,
+       password,
+       name,
+        },
+      ])
+window.location.reload();
   };
 
   return (
@@ -25,24 +35,25 @@ const Register = ({ onToggle }) => {
       <h1 className="text-2xl font-bold text-center text-green-900">
         CSU Facility Management System
       </h1>
-      <form onSubmit={handleSubmit} className="mt-6">
+      <div className="mb-2">
+          <label className="input input-bordered flex items-center gap-2">
+            <input
+              type="text"
+              placeholder="Student Name"
+              className="grow"
+              required
+              onChange={(e) => setName(e.target.value)}
+            />
+          </label>
+        </div>
         <div className="mb-2">
-          <div className="mb-2">
-            <label className="block">
-              <input
-                type="file"
-                accept="image/*"
-                className="mt-2 file-input file-input-bordered w-full"
-                required
-              />
-            </label>
-          </div>
           <label className="input input-bordered flex items-center gap-2">
             <input
               type="email"
               placeholder="example@gmail.com"
               className="grow"
               required
+              onChange={(e) => setEmail(e.target.value)}
             />
           </label>
         </div>
@@ -54,21 +65,10 @@ const Register = ({ onToggle }) => {
               placeholder="Enter a password"
               className="grow"
               required
+              onChange={(e) => setPassword(e.target.value)}
             />
           </label>
         </div>
-
-        <div className="mb-2">
-          <label className="input input-bordered flex items-center gap-2">
-            <input
-              type={showPassword ? "text" : "password"}
-              placeholder="Confirm your password"
-              className="grow"
-              required
-            />
-          </label>
-        </div>
-
         <div className="flex items-center justify-between mb-4">
           <label className="flex items-center text-sm">
             <input
@@ -81,7 +81,7 @@ const Register = ({ onToggle }) => {
         </div>
         <div className="flex justify-between items-center">
           <button
-            type="submit"
+            onClick={handleSubmit}
             className="w-full px-4 py-3 font-medium text-white bg-green-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-opacity-50 flex items-center justify-center"
             disabled={isLoading}
           >
@@ -95,7 +95,6 @@ const Register = ({ onToggle }) => {
             )}
           </button>
         </div>
-      </form>
       <div className="divider before:bg-black after:bg-black">or</div>
       <button
         className="w-full py-3 font-bold text-white btn btn-error bg-red-500 rounded-lg"

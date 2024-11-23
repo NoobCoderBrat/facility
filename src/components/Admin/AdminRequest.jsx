@@ -1,9 +1,70 @@
 import AdminSidebar from "./AdminSidebar.jsx";
 import { IoIosPeople } from "react-icons/io";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import supabase from "../supabaseClient"; // Adjust the path as necessary
 
 const AdminRequest = () => {
-  const [isApprove, isRejected] = useState(true);
+  const [bookingData, setBookingData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
+  const [statusFilter, setStatusFilter] = useState("Pending");
+
+  // Fetch data from Supabase
+  const fetch_data = async () => {
+    try {
+      const { data, error } = await supabase.from("Booking").select("*");
+      if (error) throw error;
+      setBookingData(data);
+      setFilteredData(data.filter((item) => item.status === "Pending"));
+    } catch (error) {
+      alert("An unexpected error occurred.");
+      console.error("Error during fetching history:", error.message);
+    }
+  };
+
+  // Handle dropdown filter change
+  const handleFilterChange = (e) => {
+    const selectedStatus = e.target.value;
+    setStatusFilter(selectedStatus);
+    setFilteredData(
+      bookingData.filter((item) => item.status === selectedStatus)
+    );
+  };
+
+  // Optional: Handle Approve/Reject actions
+  const handleApprove = async (id) => {
+    try {
+      const { error } = await supabase
+        .from("Booking")
+        .update({ status: "Approved" })
+        .eq("id", id);
+      if (error) throw error;
+      // Refresh data after update
+      fetch_data();
+    } catch (error) {
+      alert("Failed to approve the reservation.");
+      console.error("Approve Error:", error.message);
+    }
+  };
+
+  const handleReject = async (id) => {
+    try {
+      const { error } = await supabase
+        .from("Booking")
+        .update({ status: "Rejected" })
+        .eq("id", id);
+      if (error) throw error;
+      // Refresh data after update
+      fetch_data();
+    } catch (error) {
+      alert("Failed to reject the reservation.");
+      console.error("Reject Error:", error.message);
+    }
+  };
+
+  // Fetch data on component mount
+  useEffect(() => {
+    fetch_data();
+  }, []);
 
   return (
     <div className="flex h-screen bg-gray-100 font-mono">
@@ -20,9 +81,14 @@ const AdminRequest = () => {
                   All Reservations and Bookings
                 </h2>
               </div>
-              <select className="select select-accent w-full max-w-xs">
-                <option>Approved Reservations</option>
-                <option>Rejected Reservations</option>
+              <select
+                className="select select-accent w-full max-w-xs"
+                value={statusFilter}
+                onChange={handleFilterChange}
+              >
+                <option value="Pending">Pending Reservations</option>
+                <option value="Approved">Approved Reservations</option>
+                <option value="Rejected">Rejected Reservations</option>
               </select>
             </div>
             <div className="overflow-x-auto bg-white p-5 border rounded">
@@ -41,27 +107,46 @@ const AdminRequest = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <th>1</th>
-                    <td>202-01328</td>
-                    <td>Danny Cahilig</td>
-                    <td>Hiraya Auditorium</td>
-                    <td>11/30/2024</td>
-                    <td>10</td>
-                    <td>8:00 AM</td>
-                    <td>2:00 PM</td>
-                    <td className="flex gap-2">
-                      {isApprove ? (
-                        <button className="btn text-white btn-success btn-sm">
-                          Approve
-                        </button>
-                      ) : (
-                        <button className="btn text-white btn-error btn-sm">
-                          Reject
-                        </button>
-                      )}
-                    </td>
-                  </tr>
+                  {filteredData.length > 0 ? (
+                    filteredData.map((item, index) => (
+                      <tr key={item.id}>
+                        <th>{index + 1}</th>
+                        <td>{item.idNumber}</td>
+                        <td>{item.fullName}</td>
+                        <td>{item.facilityType}</td>
+                        <td>{new Date(item.date).toLocaleDateString()}</td>
+                        <td>{item.attendees}</td>
+                        <td>{item.startTime}</td>
+                        <td>{item.endTime}</td>
+                        <td className="flex gap-2">
+                          {item.status === "Pending" ? (
+                            <>
+                              <button
+                                className="btn text-white btn-success btn-sm"
+                                onClick={() => handleApprove(item.id)}
+                              >
+                                Approve
+                              </button>
+                              <button
+                                className="btn text-white btn-error btn-sm"
+                                onClick={() => handleReject(item.id)}
+                              >
+                                Reject
+                              </button>
+                            </>
+                          ) : (
+                            <span>{item.status}</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="9" className="text-center">
+                        No reservations found.
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>

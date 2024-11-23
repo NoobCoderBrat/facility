@@ -1,11 +1,88 @@
 import AdminSidebar from "./AdminSidebar.jsx";
 import { IoIosPeople } from "react-icons/io";
+import { useState, useEffect } from "react";
+import supabase from "../supabaseClient.jsx";
 
 const AdminDashboard = () => {
-  const expectedVisitors = 120;
-  const time_in = 85;
-  const time_out = 60;
-  const future_visitors = 30;
+  const [bookingData, setBookingData] = useState([]);
+  const [approved, setApproved] = useState('');
+  const [rejected, setRejected] = useState('');
+  const [pending, setPending] = useState('');
+  const [total, setTotal] = useState('');
+
+  const fetch_data = async () => {
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      const { error, data } = await supabase
+        .from('Booking')
+        .select('*')
+        .eq('status', 'Pending')
+        .eq('reservationDate', today);
+      if (error) throw error;
+      setBookingData(data)
+    } catch (error) {
+      alert("An unexpected error occurred.");
+      console.error('Error during fetching history:', error.message);
+    }
+  };
+
+  const fetch_stat = async () => {
+    try {
+      const { error, data } = await supabase
+        .from('Booking')
+        .select('*')
+      if (error) throw error;
+      const approved = data.filter(row => row.status === 'Approved').length;
+      setApproved(approved);
+      const rejected = data.filter(row => row.status === 'Rejected').length;
+      setRejected(rejected);
+      const pending = data.filter(row => row.status === 'Pending').length;
+      setPending(pending);
+      const total = data.length;
+      setTotal(total);
+    } catch (error) {
+      alert("An unexpected error occurred.");
+      console.error('Error during fetching history:', error.message);
+    }
+  };
+
+  const approve = async (booking) => {
+    try {
+      const { error } = await supabase
+        .from("Booking")
+        .update({
+         status: 'Approved'
+        })
+        .eq("id", booking.id);
+      if (error) throw error;
+     window.location.reload();
+    } catch (error) {
+      alert("Error updating data.");
+      console.error("Error during update:", error.message);
+    }
+  };
+
+  
+  const reject = async (booking) => {
+    try {
+      const { error } = await supabase
+        .from("Booking")
+        .update({
+         status: 'Rejected'
+        })
+        .eq("id", booking.id);
+      if (error) throw error;
+     window.location.reload();
+    } catch (error) {
+      alert("Error updating data.");
+      console.error("Error during update:", error.message);
+    }
+  };
+
+  useEffect(() => {
+    fetch_data();
+    fetch_stat();
+  }, []);
 
   return (
     <div className="flex h-screen bg-gray-100 font-mono">
@@ -16,25 +93,25 @@ const AdminDashboard = () => {
             {[
               {
                 title: "Request Approved",
-                count: expectedVisitors,
+                count: approved,
                 icon: "👥",
                 bgColor: "bg-gray-400",
               },
               {
                 title: "Request Declined",
-                count: time_in,
+                count: rejected,
                 icon: "➡️",
                 bgColor: "bg-gray-400",
               },
               {
                 title: "Pending Requests",
-                count: time_out,
+                count: pending,
                 icon: "⬅️",
                 bgColor: "bg-gray-400",
               },
               {
                 title: "Number of Users",
-                count: future_visitors,
+                count: total,
                 icon: "⏳",
                 bgColor: "bg-gray-400",
               },
@@ -79,24 +156,28 @@ const AdminDashboard = () => {
                   </tr>
                 </thead>
                 <tbody>
+                {bookingData.map((booking, index) => (
                   <tr>
                     <th>1</th>
-                    <td>202-01328</td>
-                    <td>Danny Cahilig</td>
-                    <td>Hiraya Auditorium</td>
-                    <td>11/30/2024</td>
-                    <td>10</td>
-                    <td>8:00 AM</td>
-                    <td>2:00 PM</td>
+                    <td>{booking.idNumber}</td>
+                    <td>{booking.fullName}</td>
+                    <td>{booking.facilityType}</td>
+                    <td>{booking.reservationDate}</td>
+                    <td>{booking.attendees}</td>
+                    <td>{booking.startTime}</td>
+                    <td>{booking.endTime}</td>
                     <td className="flex gap-2">
-                      <button className="btn btn-outline btn-success btn-sm">
+                      <button className="btn btn-outline btn-success btn-sm"
+                      onClick={() => approve(booking)}>
                         Approve
                       </button>
-                      <button className="btn btn-outline btn-error btn-sm">
+                      <button className="btn btn-outline btn-error btn-sm"
+                    onClick={() => reject(booking)}>
                         Reject
                       </button>
                     </td>
                   </tr>
+                   ))}
                 </tbody>
               </table>
             </div>

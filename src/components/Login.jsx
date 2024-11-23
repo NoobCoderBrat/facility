@@ -1,18 +1,40 @@
 import { useState } from "react";
+import supabase from "./supabaseClient";
+import { useNavigate } from "react-router-dom";
 
 const Login = ({ onToggle, openModal }) => {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [userType, setUserType] = useState('Student');
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
+  const handleLogin = async () => {
+    const { data } = await supabase
+    .from(userType)
+    .select('*')
+    .eq('email', email)
+    .single();
 
-    setTimeout(() => {
-      setIsLoading(false);
-      openModal(); // Simulate login error modal
-    }, 2000);
+    if (data && data.password === password && data.email === email) {
+      const name = data.name;
+      sessionStorage.setItem('name', name);
+      redirect();
+      }
+      else {
+        alert('Wrong Credentials');
+      }
   };
+
+  const redirect = () =>{
+    if (userType === 'Student'){
+      navigate("/student-dashboard");
+    }
+    else{
+      navigate("/admin-dashboard");
+    }
+  }
 
   return (
     <div className="w-full max-w-md p-10 bg-base-200 rounded-lg text-black">
@@ -26,7 +48,6 @@ const Login = ({ onToggle, openModal }) => {
       <h1 className="text-2xl font-bold text-center text-green-900">
         CSU Facility Management System
       </h1>
-      <form onSubmit={handleSubmit} className="mt-6">
         <div className="mb-2">
           <label className="input input-bordered flex items-center gap-2">
             <svg
@@ -43,6 +64,7 @@ const Login = ({ onToggle, openModal }) => {
               className="grow"
               placeholder="example@gmail.com"
               required
+              onChange={(e) => setEmail(e.target.value)}
             />
           </label>
         </div>
@@ -66,6 +88,7 @@ const Login = ({ onToggle, openModal }) => {
               placeholder="Enter a password"
               className="grow"
               required
+              onChange={(e) => setPassword(e.target.value)}
             />
           </label>
         </div>
@@ -82,13 +105,14 @@ const Login = ({ onToggle, openModal }) => {
         </div>
 
         <div className="flex justify-between gap-2">
-          <select className="select select-bordered w-1/2">
-            <option>Student</option>
-            <option>Admin</option>
+          <select className="select select-bordered w-1/2"
+           value={userType} onChange={(e) => setUserType(e.target.value)}>
+            <option value="Student">Student</option>
+            <option value="Admin">Admin</option>
           </select>
 
           <button
-            type="submit"
+            onClick={handleLogin}
             className="w-full px-4 py-3 font-medium text-white bg-green-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-opacity-50 flex items-center justify-center"
             disabled={isLoading}
           >
@@ -102,7 +126,6 @@ const Login = ({ onToggle, openModal }) => {
             )}
           </button>
         </div>
-      </form>
       <div className="divider before:bg-black after:bg-black">or</div>
       <button
         className="w-full py-3 font-bold text-white btn btn-error bg-red-500 rounded-lg"
