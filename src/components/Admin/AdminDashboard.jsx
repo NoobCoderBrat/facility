@@ -16,6 +16,7 @@ const localizer = momentLocalizer(moment);
 
 const AdminDashboard = () => {
   const [bookingData, setBookingData] = useState([]);
+  const [events, setEvents] = useState([]);
   const [approved, setApproved] = useState("");
   const [rejected, setRejected] = useState("");
   const [pending, setPending] = useState("");
@@ -87,25 +88,34 @@ const AdminDashboard = () => {
     }
   };
 
+  const fetch_events = async () => {
+    try {
+      const { error, data } = await supabase
+      .from("Booking")
+      .select("*")
+      .eq("status", "Approved");
+      if (error) throw error;
+
+      // Map the data to the format expected by the Calendar
+      const formattedEvents = data.map((item) => ({
+        title: item.facilityType,
+        start: new Date(item.reservationDate + "T" + item.startTime),
+        end: new Date(item.reservationDate + "T" + item.endTime),
+      }));
+
+      setEvents(formattedEvents);
+    } catch (error) {
+      alert("An unexpected error occurred.");
+      console.error("Error during fetching history:", error.message);
+    }
+  };
+
   useEffect(() => {
     fetch_data();
     fetch_stat();
+    fetch_events();
   }, []);
 
-  const events = [
-    {
-      start: new Date(),
-      end: new Date(new Date().getTime() + 60 * 60 * 1000), // Add 1 hour
-      title: "Study Group",
-    },
-    {
-      start: new Date(new Date().getTime() + 2 * 24 * 60 * 60 * 1000), // Add 2 days
-      end: new Date(
-        new Date().getTime() + 2 * 24 * 60 * 60 * 1000 + 2 * 60 * 60 * 1000
-      ), // Add 2 hours
-      title: "Project Meeting",
-    },
-  ];
 
   return (
     <div className="bg-gray-100 font-mono min-h-screen">
@@ -209,7 +219,7 @@ const AdminDashboard = () => {
 
         <div className="bg-white rounded-lg shadow-xl p-6 h-full">
           <div className="w-full overflow-x-auto min-h-[500px]">
-            <Calendar
+          <Calendar
               localizer={localizer}
               events={events}
               startAccessor="start"

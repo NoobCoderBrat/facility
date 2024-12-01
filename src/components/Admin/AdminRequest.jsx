@@ -55,6 +55,49 @@ const AdminRequest = () => {
       console.error("Reject Error:", error.message);
     }
   };
+  
+  const handleCancel = async (id) => {
+    try {
+      const { error } = await supabase
+        .from("Booking")
+        .update({ status: "Admin-Cancelled" })
+        .eq("id", id);
+      if (error) throw error;
+      fetch_data();
+    } catch (error) {
+      alert("Failed to reject the reservation.");
+      console.error("Reject Error:", error.message);
+    }
+  };
+
+  const handleRApprove = async (id) => {
+    try {
+      const { error } = await supabase
+        .from("Booking")
+        .update({ status: "Cancel-Approved" })
+        .eq("id", id);
+      if (error) throw error;
+      fetch_data();
+    } catch (error) {
+      alert("Failed to reject the reservation.");
+      console.error("Reject Error:", error.message);
+    }
+  };
+
+  const handleRDecline = async (id) => {
+    try {
+      const { error } = await supabase
+        .from("Booking")
+        .update({ status: "Cancel-Decline" })
+        .eq("id", id);
+      if (error) throw error;
+      fetch_data();
+    } catch (error) {
+      alert("Failed to reject the reservation.");
+      console.error("Reject Error:", error.message);
+    }
+  };
+
 
   useEffect(() => {
     fetch_data();
@@ -82,6 +125,7 @@ const AdminRequest = () => {
               <option value="Pending">Pending Reservations</option>
               <option value="Approved">Approved Reservations</option>
               <option value="Rejected">Rejected Reservations</option>
+              <option value="User-Cancelled">Cancel Requests</option>
             </select>
           </div>
           <div className="overflow-x-auto bg-white p-5 border rounded">
@@ -96,6 +140,7 @@ const AdminRequest = () => {
                   <th>No. of Attendees</th>
                   <th>Start Time</th>
                   <th>End Time</th>
+                  <th>Letter</th>
                   <th>Remarks</th>
                 </tr>
               </thead>
@@ -111,26 +156,49 @@ const AdminRequest = () => {
                       <td>{item.attendees}</td>
                       <td>{item.startTime}</td>
                       <td>{item.endTime}</td>
+                      <td><a href={item.letter} download target="_blank"><button className="btn text-white bg-blue-500 btn-sm">Download</button></a></td>
                       <td className="flex gap-2">
-                        {item.status === "Pending" ? (
-                          <>
-                            <button
-                              className="btn text-white btn-success btn-sm"
-                              onClick={() => handleApprove(item.id)}
-                            >
-                              Approve
-                            </button>
-                            <button
-                              className="btn text-white btn-error btn-sm"
-                              onClick={() => handleReject(item.id)}
-                            >
-                              Reject
-                            </button>
-                          </>
-                        ) : (
-                          <span>{item.status}</span>
-                        )}
-                      </td>
+                      {item.status === "Pending" ? (
+                        <>
+                          <button
+                            className="btn text-white btn-success btn-sm"
+                            onClick={() => handleApprove(item.id)}
+                          >
+                            Approve
+                          </button>
+                          <button
+                            className="btn text-white btn-error btn-sm"
+                            onClick={() => handleReject(item.id)}
+                          >
+                            Reject
+                          </button>
+                          <button
+                            className="btn text-white btn-warning btn-sm"
+                            onClick={() => handleCancel(item.id)}
+                          >
+                            Cancel
+                          </button>
+                        </>
+                      ) : item.status === "User-Cancelled" ? (
+                        <>
+                          <button
+                            className="btn text-white btn-primary btn-sm"
+                            onClick={() => handleRApprove(item.id)}
+                          >
+                            Approve
+                          </button>
+                          <button
+                            className="btn text-white btn-secondary btn-sm"
+                            onClick={() => handleRDecline(item.id)}
+                          >
+                            Decline
+                          </button>
+                        </>
+                      ) : (
+                        <span>{item.status}</span>
+                      )}
+</td>
+
                     </tr>
                   ))
                 ) : (

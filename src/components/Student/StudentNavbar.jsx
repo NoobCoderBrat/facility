@@ -71,11 +71,6 @@ const StudentNavbar = () => {
 
         {/* Notifications and Avatar */}
         <div className="flex items-center space-x-4">
-          {/* Notifications */}
-          <StudentNotif
-            show={showNotifications}
-            toggle={() => setShowNotifications(!showNotifications)}
-          />
 
           {/* Avatar Dropdown */}
           <div className="relative">
@@ -92,19 +87,6 @@ const StudentNavbar = () => {
             </button>
             {avatarMenuOpen && (
               <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
-                <NavLink
-                  to="/profile"
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  Profile
-                </NavLink>
-                <NavLink
-                  to="/settings"
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  Settings
-                </NavLink>
-                <hr />
                 <NavLink
                   to="/"
                   className="block px-4 py-2 text-sm text-red-500 hover:bg-gray-100"

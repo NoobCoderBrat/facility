@@ -1,25 +1,40 @@
+import { useEffect, useState } from "react";
 import StudentNavbar from "./StudentNavbar.jsx";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
+import supabase from "../supabaseClient.jsx";
 
 const localizer = momentLocalizer(moment);
 
 const StudentDashboard = () => {
-  const events = [
-    {
-      start: new Date(),
-      end: new Date(new Date().getTime() + 60 * 60 * 1000), // Add 1 hour
-      title: "Study Group",
-    },
-    {
-      start: new Date(new Date().getTime() + 2 * 24 * 60 * 60 * 1000), // Add 2 days
-      end: new Date(
-        new Date().getTime() + 2 * 24 * 60 * 60 * 1000 + 2 * 60 * 60 * 1000
-      ), // Add 2 hours
-      title: "Project Meeting",
-    },
-  ];
+  const [events, setEvents] = useState([]);
+
+  const fetch_data = async () => {
+    try {
+      const { error, data } = await supabase
+      .from("Booking")
+      .select("*")
+      .eq("status", "Approved");
+      if (error) throw error;
+
+      // Map the data to the format expected by the Calendar
+      const formattedEvents = data.map((item) => ({
+        title: item.facilityType,
+        start: new Date(item.reservationDate + "T" + item.startTime),
+        end: new Date(item.reservationDate + "T" + item.endTime),
+      }));
+
+      setEvents(formattedEvents);
+    } catch (error) {
+      alert("An unexpected error occurred.");
+      console.error("Error during fetching history:", error.message);
+    }
+  };
+
+  useEffect(() => {
+    fetch_data();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-100 font-mono">

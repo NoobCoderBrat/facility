@@ -7,14 +7,16 @@ const ReservationForm = () => {
   const name = sessionStorage.getItem("name");
   const [idNumber, setIdNumber] = useState("");
   const [contactNumber, setContactNumber] = useState("");
-  const [facilityType, setFacilityType] = useState("");
+  const [facilityType, setFacilityType] = useState("Library - Activity Center");
   const [reservationDate, setReservationDate] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [attendees, setAttendees] = useState("");
+  const [letter, setLetter] = useState(null);
   const [otherRequirements, setOtherRequirements] = useState("");
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [agree, setAgree] = useState(false);
+  const [file, setFile] = useState("");
 
   const handleCheckboxChange = (label) => {
     setSelectedOptions((prev) =>
@@ -25,6 +27,10 @@ const ReservationForm = () => {
   };
 
   const add_booking = async () => {
+    if (!idNumber || !contactNumber || !reservationDate || !startTime || !endTime || !attendees || !letter || !agree) {
+      alert("Please fill out all required fields.");
+      return;
+    }
     const { data, error } = await supabase.from("Booking").insert([
       {
         fullName: name,
@@ -32,6 +38,7 @@ const ReservationForm = () => {
         contactNumber,
         facilityType,
         reservationDate,
+        letter,
         startTime,
         endTime,
         attendees,
@@ -41,8 +48,36 @@ const ReservationForm = () => {
       },
     ]);
     console.log(data);
+    window.location.reload();
   };
 
+
+  const handleFile = async (e) => {
+    const selectedFile = e.target.files[0];
+    setFile(selectedFile);
+    if (selectedFile) {
+      try {
+        const filePath = `${selectedFile.name}`;
+        const { data, error } = await supabase.storage
+          .from("Letter")
+          .upload(filePath, selectedFile);
+        if (error) {
+          throw error;
+        }
+        const { data: publicURL, error: urlError } = supabase.storage
+          .from("Letter")
+          .getPublicUrl(filePath);
+        if (urlError) {
+          throw urlError;
+        }
+        console.log("Image URL:", publicURL.publicUrl);
+        setLetter(publicURL.publicUrl);
+      } catch (error) {
+        console.error("Error uploading image:", error);
+        alert("Error uploading image: " + error.message);
+      }
+    }
+  };
   return (
     <div className="min-h-screen bg-gray-100 font-mono">
       <StudentNavbar />
@@ -212,6 +247,10 @@ const ReservationForm = () => {
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <label className="input input-bordered flex items-center gap-2">
+              <p>Attach Letter:</p>
+                <input type="file" className="grow" onChange={handleFile}/>
+              </label>
               <label className="input input-bordered flex items-center gap-2">
                 <FaUsers className="text-gray-500" />
                 <input
@@ -222,9 +261,11 @@ const ReservationForm = () => {
                   onChange={(e) => setAttendees(e.target.value)}
                 />
               </label>
-              <label className="input input-bordered flex items-center gap-2">
-                <input type="file" className="grow" multiple />
-              </label>
+              {letter === null ? (
+              <p className="text-red-500">No file uploaded</p>
+            ) : (
+              <p className="text-green-500">File uploaded</p>
+            )}
             </div>
             <div>
               <h2 className="text-lg font-semibold mb-3 tracking-widest">
