@@ -26,7 +26,7 @@ const Home = () => {
               booking process and instant updates, we help you focus on what
               matters most—your learning journey.
             </p>
-            <NavLink to="/auth">
+            <NavLink to="/login">
               <button className="btn btn-primary text-white font-bold w-full sm:w-1/2 md:w-1/4">
                 Get Started
               </button>

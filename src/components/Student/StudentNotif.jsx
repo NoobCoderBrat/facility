@@ -10,8 +10,8 @@ const StudentNotif = ({ show, toggle }) => {
 
   return (
     <div className="relative">
-      <button className="p-2 hover:bg-gray-100 rounded-full" onClick={toggle}>
-        <IoNotificationsOutline className="w-6 h-6 text-gray-600" />
+      <button className="p-2 rounded-full" onClick={toggle}>
+        <IoNotificationsOutline className="w-6 h-6 text-white" />
       </button>
       {show && (
         <div className="absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg py-1 z-10">

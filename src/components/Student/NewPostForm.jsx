@@ -6,15 +6,13 @@ const NewPostForm = ({ onSubmit }) => {
   const [content, setContent] = useState("");
 
   const handleSubmit = async () => {
-    const { data, error } = await supabase
-    .from('Post')
-    .insert([
+    const { data, error } = await supabase.from("Post").insert([
       {
         name,
         content,
       },
-    ])
-window.location.reload();
+    ]);
+    window.location.reload();
   };
 
   return (
@@ -28,7 +26,7 @@ window.location.reload();
       />
       <div className="flex justify-end">
         <button
-        onClick={handleSubmit}
+          onClick={handleSubmit}
           className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 w-1/3"
         >
           Post
