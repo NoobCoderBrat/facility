@@ -89,14 +89,12 @@ const StudentReservations = () => {
     }
   };
 
-
-  
   const approve = async (student) => {
     try {
       const { error } = await supabase
-      .from("Booking")
-      .delete()
-      .eq("id", student.id);
+        .from("Booking")
+        .delete()
+        .eq("id", student.id);
 
       if (error) throw error;
 
@@ -128,7 +126,7 @@ const StudentReservations = () => {
             <option value="Admin-Cancelled">Admin-Cancelled</option>
           </select>
         </div>
-        <div className="overflow-x-auto bg-white p-5 border shadow-lg rounded">
+        <div className="overflow-x-auto bg-white p-2 border shadow-lg rounded">
           <table className="table bg-white">
             <thead className="bg-base-200">
               <tr>
@@ -155,38 +153,48 @@ const StudentReservations = () => {
                   <td>{student.status}</td>
                   <td>{student.attendees}</td>
                   <td>
-                  {student.status === "Admin-Cancelled" ? (
-                    <button
-                      className="bg-green-500 text-white px-4 py-2 mt-2 mb-2 rounded-md hover:bg-green-600"
-                      onClick={() => approve(student)}
-                    >
-                      Approve
-                    </button>
-                  ) : (
-                    <>
+                    {student.status === "Admin-Cancelled" ? (
                       <button
-                        className={`bg-blue-500 text-white px-4 py-2 mt-2 mb-2 mr-2 rounded-md hover:bg-blue-600 ${
-                          student.status === "Cancelled" || student.status === "Admin-Cancelled" ? "opacity-50 cursor-not-allowed" : ""
-                        }`}
-                        onClick={() => handleEditClick(student)}
-                        disabled={student.status === "Cancelled" || student.status === "Admin-Cancelled"}
+                        className="bg-green-500 text-white px-4 py-2 mt-2 mb-2 rounded-md hover:bg-green-600"
+                        onClick={() => approve(student)}
                       >
-                        Edit
+                        Approve
                       </button>
-                      <button
-                        className={`bg-red-500 text-white px-4 py-2 mt-2 mb-2 rounded-md hover:bg-red-600 ${
-                          student.status === "Cancelled" || student.status === "Admin-Cancelled" ? "opacity-50 cursor-not-allowed" : ""
-                        }`}
-                        onClick={() => cancel(student)}
-                        disabled={student.status === "Cancelled" || student.status === "Admin-Cancelled"}
-                      >
-                        Cancel
-                      </button>
-                    </>
-                  )}
-                </td>
-
-
+                    ) : (
+                      <>
+                        <button
+                          className={`bg-blue-500 text-white px-4 py-2 mt-2 mb-2 mr-2 rounded-md hover:bg-blue-600 ${
+                            student.status === "Cancelled" ||
+                            student.status === "Admin-Cancelled"
+                              ? "opacity-50 cursor-not-allowed"
+                              : ""
+                          }`}
+                          onClick={() => handleEditClick(student)}
+                          disabled={
+                            student.status === "Cancelled" ||
+                            student.status === "Admin-Cancelled"
+                          }
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className={`bg-red-500 text-white px-4 py-2 mt-2 mb-2 rounded-md hover:bg-red-600 ${
+                            student.status === "Cancelled" ||
+                            student.status === "Admin-Cancelled"
+                              ? "opacity-50 cursor-not-allowed"
+                              : ""
+                          }`}
+                          onClick={() => cancel(student)}
+                          disabled={
+                            student.status === "Cancelled" ||
+                            student.status === "Admin-Cancelled"
+                          }
+                        >
+                          Cancel
+                        </button>
+                      </>
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -236,7 +244,9 @@ const StudentReservations = () => {
                 <option value="Library - HERO Learning Commons Auditorium">
                   Library - HERO Learning Commons Auditorium
                 </option>
-                <option value="Library - Archives Room">Library - Archives Room</option>
+                <option value="Library - Archives Room">
+                  Library - Archives Room
+                </option>
                 <option value="Kinaadman Hall">Kinaadman Hall</option>
                 <option value="Hinang Auditorium">Hinang Auditorium</option>
                 <option value="Hiraya - Auditorium">Hiraya - Auditorium</option>
@@ -248,20 +258,44 @@ const StudentReservations = () => {
                 <option value="Hiraya - CL6">Hiraya - CL6</option>
                 <option value="Hiraya - CL10">Hiraya - CL10</option>
                 <option value="Hiraya - Navigatu">Hiraya - Navigatu</option>
-                <option value="Hiraya - Multimedia Lab">Hiraya - Multimedia Lab</option>
+                <option value="Hiraya - Multimedia Lab">
+                  Hiraya - Multimedia Lab
+                </option>
                 <option value="Hiraya - Net Lab">Hiraya - Net Lab</option>
                 <option value="Hiraya - MSIT Lab">Hiraya - MSIT Lab</option>
-                <option value="Hiraya - Lecture Room #1">Hiraya - Lecture Room #1</option>
-                <option value="Hiraya - Lecture Room #2">Hiraya - Lecture Room #2</option>
-                <option value="Hiraya - Lecture Room #3">Hiraya - Lecture Room #3</option>
-                <option value="Masawa - Lecture Room #1">Masawa - Lecture Room #1</option>
-                <option value="Masawa - Lecture Room #2">Masawa - Lecture Room #2</option>
-                <option value="Masawa - Lecture Room #3">Masawa - Lecture Room #3</option>
-                <option value="Masawa - Lecture Room #4">Masawa - Lecture Room #4</option>
-                <option value="Masawa - Lecture Room #5">Masawa - Lecture Room #5</option>
-                <option value="Masawa - Lecture Room #6">Masawa - Lecture Room #6</option>
-                <option value="Masawa - Lecture Room #7">Masawa - Lecture Room #7</option>
-                <option value="Masawa - Lecture Room #8">Masawa - Lecture Room #8</option>
+                <option value="Hiraya - Lecture Room #1">
+                  Hiraya - Lecture Room #1
+                </option>
+                <option value="Hiraya - Lecture Room #2">
+                  Hiraya - Lecture Room #2
+                </option>
+                <option value="Hiraya - Lecture Room #3">
+                  Hiraya - Lecture Room #3
+                </option>
+                <option value="Masawa - Lecture Room #1">
+                  Masawa - Lecture Room #1
+                </option>
+                <option value="Masawa - Lecture Room #2">
+                  Masawa - Lecture Room #2
+                </option>
+                <option value="Masawa - Lecture Room #3">
+                  Masawa - Lecture Room #3
+                </option>
+                <option value="Masawa - Lecture Room #4">
+                  Masawa - Lecture Room #4
+                </option>
+                <option value="Masawa - Lecture Room #5">
+                  Masawa - Lecture Room #5
+                </option>
+                <option value="Masawa - Lecture Room #6">
+                  Masawa - Lecture Room #6
+                </option>
+                <option value="Masawa - Lecture Room #7">
+                  Masawa - Lecture Room #7
+                </option>
+                <option value="Masawa - Lecture Room #8">
+                  Masawa - Lecture Room #8
+                </option>
               </select>
             </div>
             <div className="mb-4">
@@ -307,7 +341,9 @@ const StudentReservations = () => {
               />
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-medium">Number of Attendees</label>
+              <label className="block text-sm font-medium">
+                Number of Attendees
+              </label>
               <input
                 type="text"
                 className="border rounded w-full p-2"

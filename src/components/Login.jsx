@@ -61,7 +61,7 @@ const Login = () => {
               <img
                 src="csu.png"
                 alt="csu-logo"
-                className="w-3/4 sm:w-2/3 md:w-1/2 lg:w-1/2 xl:w-1/3 2xl:w-1/4 object-contain"
+                className="w-1/2 md:w-1/3 lg:w-1/4 object-contain"
               />
             </div>
             <h1 className="text-2xl font-bold text-center text-green-900 mb-5">

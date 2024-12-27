@@ -70,8 +70,12 @@ const StudentNavbar = () => {
         </nav>
 
         {/* Notifications and Avatar */}
-        <div className="flex items-center space-x-4">
-
+        <div className="flex items-center space-x-1">
+          {/* Notifications */}
+          <StudentNotif
+            show={showNotifications}
+            toggle={() => setShowNotifications(!showNotifications)}
+          />
           {/* Avatar Dropdown */}
           <div className="relative">
             <button
