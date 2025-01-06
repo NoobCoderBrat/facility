@@ -17,6 +17,7 @@ const ReservationForm = () => {
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [agree, setAgree] = useState(false);
   const [file, setFile] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleCheckboxChange = (label) => {
     setSelectedOptions((prev) =>
@@ -78,6 +79,15 @@ const ReservationForm = () => {
       }
     }
   };
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  // Function to close the modal
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 font-mono">
       <StudentNavbar />
@@ -320,10 +330,12 @@ const ReservationForm = () => {
                 onChange={(e) => setAgree(e.target.checked)}
               />
               <label htmlFor="agree" className="flex items-center gap-2">
-                <FaCheck className="text-gray-500" />
-                "I agree to follow the facility's guidelines and usage
-                policies."
-              </label>
+              <FaCheck className="text-gray-500" />
+              I agree to follow the
+              <a  onClick={openModal} className="text-blue-500 hover:underline">
+                facility's guidelines and usage policies.
+              </a>
+            </label>
             </div>
             <div className="flex justify-end mt-10">
               <button
@@ -336,6 +348,57 @@ const ReservationForm = () => {
             </div>
           </div>
         </div>
+        {isModalOpen && (
+        <div
+          className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50"
+          onClick={closeModal}
+        >
+          <div
+            className="bg-white p-6 rounded-lg"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 className="text-xl font-bold mb-3">Facility's Guidelines and Usage Policies</h2>
+            <div className="mb-3">
+            <p className="text-l font-bold">Equipment Use</p>
+            <p className="text-sm italic">Equipment must be used as intended.</p>
+            <p className="text-sm italic">Report any malfunctioning or damaged equipment to staff immediately.</p>
+            <p className="text-sm italic">Users are responsible for cleaning and returning equipment to its designated area after use.</p>
+            </div>
+
+            <div className="mb-3">
+            <p className="text-l font-bold">Cleanliness and Maintenance</p>
+            <p className="text-sm italic">Please dispose of trash in the provided bins.</p>
+            <p className="text-sm italic">Personal belongings should not be left unattended. The facility is not responsible for lost or stolen items.</p>
+            </div>
+            
+            <div className="mb-3">
+            <p className="text-l font-bold">Reservations and Bookings</p>
+            <p className="text-sm italic">Reservations for rooms or equipment should be made in advance through the online booking system.</p>
+            <p className="text-sm italic">Cancellations should be made at least 24 hours prior to the reserved time.</p>
+            </div>
+
+            <div className="mb-3">
+            <p className="text-l font-bold">Emergency Procedures</p>
+            <p className="text-sm italic">In case of an emergency, follow the evacuation plan and proceed to the nearest exit.</p>
+            </div>
+
+            <div className="mb-3">
+            <p className="text-l font-bold">Safety and Conduct</p>
+            <p className="text-sm italic">Follow all posted safety signs and instructions.</p>
+            <p className="text-sm italic">Report any accidents, injuries, or unsafe conditions to staff immediately.</p>
+            <p className="text-sm italic">Maintain a respectful and courteous manner towards all users and staff.</p>
+            <p className="text-sm italic">Smoking, alcohol, and illegal substances are strictly prohibited on the premises.</p>
+            </div>
+          
+            <button
+              className="mt-4 p-2 bg-blue-500 text-white rounded"
+              onClick={closeModal}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
       </main>
     </div>
   );

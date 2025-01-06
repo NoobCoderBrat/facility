@@ -7,11 +7,12 @@ const AdminRequest = () => {
   const [bookingData, setBookingData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [statusFilter, setStatusFilter] = useState("Pending");
+  const name = sessionStorage.getItem("name");
 
   const fetch_data = async () => {
     try {
-      const { data, error } = await supabase.from("Booking").select("*");
-      if (error) throw error;
+      const { data, error } = await supabase.from("Booking").select("*").ilike('facilityType', `%${name}%`);
+      if (error) throw error
       setBookingData(data);
       setFilteredData(data.filter((item) => item.status === "Pending"));
     } catch (error) {
@@ -151,7 +152,7 @@ const AdminRequest = () => {
                       <td>{item.idNumber}</td>
                       <td>{item.fullName}</td>
                       <td>{item.facilityType}</td>
-                      <td>{new Date(item.date).toLocaleDateString()}</td>
+                      <td>{new Date(item.reservationDate).toLocaleDateString()}</td>
                       <td>{item.attendees}</td>
                       <td>{item.startTime}</td>
                       <td>{item.endTime}</td>

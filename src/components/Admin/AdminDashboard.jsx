@@ -21,6 +21,7 @@ const AdminDashboard = () => {
   const [rejected, setRejected] = useState("");
   const [pending, setPending] = useState("");
   const [total, setTotal] = useState("");
+  const name = sessionStorage.getItem("name");
 
   const fetch_data = async () => {
     try {
@@ -29,7 +30,8 @@ const AdminDashboard = () => {
         .from("Booking")
         .select("*")
         .eq("status", "Pending")
-        .eq("reservationDate", today);
+        .eq("reservationDate", today)
+        .ilike('facilityType', `%${name}%`);
       if (error) throw error;
       setBookingData(data);
     } catch (error) {
